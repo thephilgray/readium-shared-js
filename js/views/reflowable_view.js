@@ -576,21 +576,34 @@ var ReflowableView = function(options, reader){
 
     function updateViewportSize() {
 
-        var newWidth = _$contentFrame.width();
         
-        // Ensure that the new viewport width is always even numbered
+        var newWidth =_paginationInfo.visibleColumnCount <2 && Helpers.getURLQueryParams()['width'] ? Helpers.getURLQueryParams()['width'] : _$contentFrame.width();
+        
+        // Ensure that the new viewport width   is always even numbered
         // this is to prevent a rendering inconsistency between browsers when odd-numbered bounds are used for CSS columns
         // See https://github.com/readium/readium-shared-js/issues/37
         newWidth -= newWidth % 2;
 
-        var newHeight = _$contentFrame.height();
+        var newHeight = _paginationInfo.visibleColumnCount <2 && Helpers.getURLQueryParams()['height'] ? Helpers.getURLQueryParams()['height'] : _$contentFrame.height();
 
+        if(_paginationInfo.visibleColumnCount < 2 && Helpers.getURLQueryParams()['width']){
+            // PG: couldn't find where this is set; overriding
+            var frame = document.getElementById('reflowable-book-frame');
+            frame.style.left = 0;
+            frame.style.right = 0;
+        }
+
+
+        console.log(_paginationInfo, newWidth, newHeight);
         if(_lastViewPortSize.width !== newWidth || _lastViewPortSize.height !== newHeight){
 
             _lastViewPortSize.width = newWidth;
             _lastViewPortSize.height = newHeight;
+
+
             return true;
         }
+
 
         return false;
     }
